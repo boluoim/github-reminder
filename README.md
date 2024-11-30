@@ -1,6 +1,6 @@
 # GitHub Commit Reminder
 
-[![Deploy to Cloudflare Workers](https://github.com/boluoim/github-reminder/actions/workflows/deploy.yml/badge.svg?branch=main&event=push)](https://github.com/boluoim/github-reminder/actions/workflows/deploy.yml)
+[![Deploy to Cloudflare Workers](https://github.com/boluoim/github-reminder/actions/workflows/deploy.yml/badge.svg)](https://github.com/boluoim/github-reminder/actions/workflows/deploy.yml)
 
 An automated tool built on Cloudflare Workers that checks your daily GitHub commits and sends reminder emails.
 
