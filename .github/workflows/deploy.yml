@@ -25,3 +25,34 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: npm run deploy 
+
+      # Update the badge in README.md based on deployment status
+      - name: Update Badge
+        if: always()
+        run: |
+          # Get the deployment status
+          STATUS="${{ steps.deploy.outcome }}"
+          
+          # Read the current README content
+          README_CONTENT=$(cat README.md)
+          
+          if [ "$STATUS" == "success" ]; then
+            # Update badge to passing
+            NEW_BADGE="![Deploy to Cloudflare Workers](https://img.shields.io/badge/Deploy%20to%20Cloudflare%20Workers-passing-brightgreen)"
+          else
+            # Update badge to failed
+            NEW_BADGE="![Deploy to Cloudflare Workers](https://img.shields.io/badge/Deploy%20to%20Cloudflare%20Workers-failed-red)"
+          fi
+          
+          # Replace the existing badge line with the new one
+          # This assumes your badge is on a line starting with "![Deploy to Cloudflare Workers]"
+          echo "$README_CONTENT" | sed "s|!\[Deploy to Cloudflare Workers\].*|$NEW_BADGE|g" > README.md
+
+      - name: Commit and Push Badge Update
+        if: always()
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add README.md
+          git commit -m "Update deployment status badge [skip ci]" || exit 0
+          git push
