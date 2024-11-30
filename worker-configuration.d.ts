@@ -6,4 +6,7 @@ interface Env {
 	GITHUB_TOKEN: string;
 	EMAIL_RECIPIENT: string;
 	SENDER_EMAIL: string;
+	REMINDER_HOURS: string;
+	REMINDER_SUBJECTS: string;
+	REMINDER_BODIES: string;
 }

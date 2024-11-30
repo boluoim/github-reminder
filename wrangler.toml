@@ -23,7 +23,9 @@ enabled = true
 # Note: Use secrets to store sensitive data.
 # - https://developers.cloudflare.com/workers/configuration/secrets/
 # [vars]
-# MY_VARIABLE = "production_value"
+REMINDER_HOURS = "14|22"
+REMINDER_SUBJECTS = "💻 Afternoon GitHub commit reminder|🚨 Last call for GitHub commits today!"
+REMINDER_BODIES = "Hi there! Just checking in - you haven't made any GitHub commits today yet. Keep that coding streak alive! 💪|Hey! Just a final reminder that you haven't made any GitHub commits today. There's still time to keep that streak going! 🏃‍♂️"
 
 # Bind the Workers AI model catalog. Run machine learning models, powered by serverless GPUs, on Cloudflare’s global network
 # Docs: https://developers.cloudflare.com/workers/wrangler/configuration/#workers-ai

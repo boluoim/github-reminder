@@ -3,13 +3,14 @@ export default {
 	const currentTime = new Date();
 	const userTime = new Date(currentTime.toLocaleString('en-US', { timeZone: env.TIMEZONE }));
 	const hours = userTime.getHours();
+	const reminderHours = env.REMINDER_HOURS.split('|').map(Number);
 
-	if (![14, 22].includes(hours)) return;
+	if (!reminderHours.includes(hours)) return;
 
 	const hasCommitted = await checkTodaysCommits(env);
 
 	if (!hasCommitted) {
-	  await sendReminderEmail(hours, env);
+	  await sendReminderEmail(hours, env, reminderHours);
 	}
   },
 
@@ -57,15 +58,15 @@ async function checkTodaysCommits(env: Env) {
   }
 }
 
-async function sendReminderEmail(hours: number, env: Env) {
-  const isEvening = hours === 22;
-  const subject = isEvening 
-    ? "🚨 Last call for GitHub commits today!" 
-    : "💻 Afternoon GitHub commit reminder";
-  
-  const body = isEvening
-    ? "Hey! Just a final reminder that you haven't made any GitHub commits today. There's still time to keep that streak going! 🏃‍♂️"
-    : "Hi there! Just checking in - you haven't made any GitHub commits today yet. Keep that coding streak alive! 💪";
+async function sendReminderEmail(hours: number, env: Env, reminderHours: number[]) {
+  const index = reminderHours.indexOf(hours);
+  const subject = env.REMINDER_SUBJECTS.split('|')[index];
+  const body = env.REMINDER_BODIES.split('|')[index];
+
+  if (!subject || !body) {
+	console.log(`Don't have reminder configuration for this hour: ${hours}`);
+	return;
+  }
 
   try {
 	const response = await fetch('https://api.mailchannels.net/tx/v1/send', {
