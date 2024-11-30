@@ -5,6 +5,9 @@
 
 An automated tool built on Cloudflare Workers that checks your daily GitHub commits and sends reminder emails.
 
+![github-reminder](https://github.com/user-attachments/assets/d5811bc6-24e2-4c91-a9af-99e273e9e876)
+
+
 ## Features
 
 - Automatically checks daily GitHub commit status
