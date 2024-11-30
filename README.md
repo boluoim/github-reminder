@@ -10,7 +10,7 @@ An automated tool built on Cloudflare Workers that checks your daily GitHub comm
 - Sends friendly reminder emails in the afternoon and evening
 - HTTP endpoint to query today's commit status
 - Serverless architecture using Cloudflare Workers
-- CI/CD pipeline using GitHub Actions·
+- CI/CD pipeline using GitHub Actions
 
 ## Tech Stack
 
