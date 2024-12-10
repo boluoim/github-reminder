@@ -52,6 +52,40 @@ You need to set the following environment variables in Cloudflare Workers:
 - `TELEGRAM_CHAT_ID`: Telegram Chat ID
 - `REMINDER_HOURS`: Scheduled hours to send reminders (e.g., "14|22")
 
+## Telegram Bot Setup
+
+### 1. Create Bot
+1. Find @BotFather on Telegram
+2. Send `/newbot` command
+3. Set bot name
+4. Save the bot token
+
+### 2. Create Private Group
+1. Click "New Group" in Telegram
+2. Name the group (e.g., "GitHub Reminder")
+3. Add only your newly created bot
+4. Set bot as administrator with following permissions:
+   - Delete Messages
+   - Pin Messages (optional)
+
+### 3. Get Group ID
+1. Start a private chat with your bot, send `/start`
+2. Go back to group, send a message mentioning your bot
+3. Visit `https://api.telegram.org/bot<YOUR_BOT_TOKEN>/getUpdates`
+4. Find the "id" value in the "chat" object from returned JSON
+5. This number is your `TELEGRAM_CHAT_ID`
+
+### 4. Security Settings
+Find @BotFather and configure:
+1. `/setprivacy` - Choose Enable
+2. `/setjoingroups` - Choose Disable (Prevents bot from being added to other groups)
+
+After setup:
+- ✅ Only you can see bot messages
+- ✅ Bot cannot be added to other groups
+- ✅ Messages are secure in private group
+- ✅ You can check reminder history anytime
+
 ## Development
 
 Local development:
