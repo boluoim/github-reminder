@@ -1,17 +1,17 @@
-# GitHub Commit Reminder
+# GitHub Tracker
 
-[![Deploy to Cloudflare Workers](https://github.com/boluoim/github-reminder/actions/workflows/deploy.yml/badge.svg)](https://github.com/boluoim/github-reminder/actions/workflows/deploy.yml)
-[![Version](https://img.shields.io/github/package-json/v/boluoim/github-reminder)](https://github.com/boluoim/github-reminder/releases)
+[![Deploy to Cloudflare Workers](https://github.com/boluoim/github-tracker/actions/workflows/deploy.yml/badge.svg)](https://github.com/boluoim/github-tracker/actions/workflows/deploy.yml)
+[![Version](https://img.shields.io/github/package-json/v/boluoim/github-tracker)](https://github.com/boluoim/github-tracker/releases)
 
-An automated tool built on Cloudflare Workers that checks your daily GitHub commits and sends reminder emails.
+An automated tool built on Cloudflare Workers that checks your daily GitHub commits and sends reminders via Telegram.
 
-![github-reminder](https://github.com/user-attachments/assets/d5811bc6-24e2-4c91-a9af-99e273e9e876)
+![github-tracker](https://github.com/user-attachments/assets/d5811bc6-24e2-4c91-a9af-99e273e9e876)
 
 
 ## Features
 
 - Automatically checks daily GitHub commit status
-- Sends friendly reminder emails in the afternoon and evening
+- Sends friendly reminders via Telegram at scheduled times
 - HTTP endpoint to query today's commit status
 - Serverless architecture using Cloudflare Workers
 - CI/CD pipeline using GitHub Actions
@@ -20,7 +20,7 @@ An automated tool built on Cloudflare Workers that checks your daily GitHub comm
 
 - TypeScript
 - Cloudflare Workers
-- MailChannels API
+- Telegram Bot API
 - GitHub API
 
 ## Installation
@@ -29,10 +29,10 @@ An automated tool built on Cloudflare Workers that checks your daily GitHub comm
 
 ```bash
 # clone the repository
-git clone https://github.com/boluoim/github-reminder.git
+git clone https://github.com/boluoim/github-tracker.git
 
 # navigate to the project directory
-cd github-reminder
+cd github-tracker
 ```
 
 2. Install dependencies:
@@ -48,8 +48,9 @@ You need to set the following environment variables in Cloudflare Workers:
 - `TIMEZONE`: Your timezone (e.g., "America/New_York")
 - `GITHUB_USERNAME`: Your GitHub username
 - `GITHUB_TOKEN`: GitHub Personal Access Token
-- `EMAIL_RECIPIENT`: Email address to receive reminders
-- `SENDER_EMAIL`: Email address to send reminders from
+- `TELEGRAM_BOT_TOKEN`: Telegram Bot Token
+- `TELEGRAM_CHAT_ID`: Telegram Chat ID
+- `REMINDER_HOURS`: Scheduled hours to send reminders (e.g., "14|22")
 
 ## Development
 
@@ -68,8 +69,8 @@ npm run deploy
 ## How It Works
 
 1. The worker runs on a scheduled basis (see cron configuration in wrangler.toml)
-2. Checks are performed at 2 PM and 10 PM
-3. If no commits are detected for the current day, a reminder email is sent
+2. Checks are performed at configured times (default: 2 PM and 10 PM)
+3. If no commits are detected for the current day, a reminder is sent via Telegram
 4. Provides an HTTP endpoint to manually check commit status
 
 ## License
