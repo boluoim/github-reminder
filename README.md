@@ -5,7 +5,7 @@
 
 An automated tool built on Cloudflare Workers that checks your daily GitHub commits and sends reminders via Telegram.
 
-![github-tracker](https://github.com/user-attachments/assets/d5811bc6-24e2-4c91-a9af-99e273e9e876)
+![github-tracker](https://github.com/user-attachments/assets/50476ba7-c001-48a5-a160-d8656187cabd)
 
 
 ## Features
