@@ -4,7 +4,7 @@ interface Env {
 	TIMEZONE: string;
 	GITHUB_USERNAME: string;
 	GITHUB_TOKEN: string;
-	REMINDER_HOURS: string;
+	REMINDER_HOUR: number;
 	TELEGRAM_BOT_TOKEN: string;
 	TELEGRAM_CHAT_ID: string;
 }

@@ -10,11 +10,11 @@ An automated tool built on Cloudflare Workers that checks your daily GitHub comm
 
 ## Features
 
-- Automatically checks daily GitHub commit status
-- Sends friendly reminders via Telegram at scheduled times
-- HTTP endpoint to query today's commit status
-- Serverless architecture using Cloudflare Workers
-- CI/CD pipeline using GitHub Actions
+- 🔄 Automatically checks daily GitHub commit status
+- 📱 Sends friendly reminders via Telegram at scheduled times
+- 🌐 HTTP endpoint to query today's commit status
+- ☁️ Serverless architecture using Cloudflare Workers
+- 🚀 CI/CD pipeline using GitHub Actions
 
 ## Tech Stack
 
@@ -50,7 +50,15 @@ You need to set the following environment variables in Cloudflare Workers:
 - `GITHUB_TOKEN`: GitHub Personal Access Token
 - `TELEGRAM_BOT_TOKEN`: Telegram Bot Token
 - `TELEGRAM_CHAT_ID`: Telegram Chat ID
-- `REMINDER_HOURS`: Scheduled hours to send reminders (e.g., "14|22")
+- `REMINDER_HOUR`: Hour to send daily reminder (24-hour format) (e.g., 23)
+
+### GitHub Token Setup
+
+1. Go to GitHub Settings > Developer settings > Personal access tokens
+2. Generate a new token with the following scopes:
+   - `read:user`
+   - `repo`
+3. Copy the token and save it as `GITHUB_TOKEN`
 
 ## Telegram Bot Setup
 

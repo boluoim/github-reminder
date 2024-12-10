@@ -3,62 +3,22 @@ export default {
 	const currentTime = new Date();
 	const userTime = new Date(currentTime.toLocaleString('en-US', { timeZone: env.TIMEZONE }));
 	const hours = userTime.getHours();
-	const reminderHours = env.REMINDER_HOURS.split('|').map(Number);
 
-	if (!reminderHours.includes(hours)) return;
+	if (+hours !== +env.REMINDER_HOUR) return;
 
-	const hasCommitted = await checkTodaysCommits(env);
+	const message = await getTodaysCommitSummary(env);
 
-	if (!hasCommitted) {
-	  await sendTelegramMessage(env, 'No commits today. You can do it! 💪');
-	}
+	await sendTelegramMessage(env, message);
   },
 
   async fetch(request: Request, env: Env) {
-	const hasCommitted = await checkTodaysCommits(env);
+	const message = await getTodaysCommitSummary(env);
 
-	return new Response(JSON.stringify({
-	  hasCommitted,
-	  message: hasCommitted
-		? "You've committed today! 🎉"
-		: "No commits today. You can do it! 💪"
-	}));
+	return new Response(message);
   }
 };
 
-async function checkTodaysCommits(env: Env) {
-  const now = new Date();
-  const todayStart = new Date(now.toLocaleString('en-US', { timeZone: env.TIMEZONE }));
-  todayStart.setHours(0, 0, 0, 0);
-
-  const since = todayStart.toISOString();
-
-  try {
-	const response = await fetch(
-	  `https://api.github.com/users/${env.GITHUB_USERNAME}/events`,
-	  {
-		headers: {
-		  Authorization: `Bearer ${env.GITHUB_TOKEN}`,
-		  'Accept': 'application/vnd.github.v3+json',
-		  'User-Agent': 'Github-Commit-Reminder'
-		}
-	  }
-	);
-
-	if (!response.ok) {
-	  throw new Error(`GitHub API request failed: ${response.statusText}`);
-	}
-
-	const events: any[] = await response.json();
-
-	return events.some(event => event.type === 'PushEvent' && new Date(event.created_at) >= todayStart);
-  } catch (error) {
-	console.error('Error fetching GitHub events:', error);
-	return false;
-  }
-}
-
-async function sendTelegramMessage(env: Env, message: string) {
+async function sendTelegramMessage(env: Env, message: string): Promise<boolean> {
 	try {
 		const response = await fetch(
 			`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`,
@@ -78,7 +38,70 @@ async function sendTelegramMessage(env: Env, message: string) {
 		if (!response.ok) {
 			throw new Error(`Failed to send telegram message: ${response.statusText}`);
 		}
+
+		return true;
 	} catch (error) {
 		console.error('Error sending telegram message:', error);
+		return false;
+	}
+}
+
+async function getTodaysCommitSummary(env: Env): Promise<string> {
+	const now = new Date();
+	const todayStart = new Date(now.toLocaleString('en-US', { timeZone: env.TIMEZONE }));
+	todayStart.setHours(0, 0, 0, 0);
+
+	try {
+		const response = await fetch(
+			`https://api.github.com/users/${env.GITHUB_USERNAME}/events`,
+			{
+				headers: {
+					Authorization: `Bearer ${env.GITHUB_TOKEN}`,
+					'Accept': 'application/vnd.github.v3+json',
+					'User-Agent': 'Github-Commit-Tracker'
+				}
+			}
+		)
+
+		const rateLimit = {
+			remaining: response.headers.get('X-RateLimit-Remaining'),
+			reset: response.headers.get('X-RateLimit-Reset')
+		}
+
+		if (response.status === 403 && rateLimit.remaining === '0') {
+			return `🚨 GitHub rate limit exceeded. Please try again later. 🚨\n\n` +
+				`Rate Limit: ${rateLimit.remaining} requests remaining. Reset at ${new Date(Number(rateLimit.reset) * 1000).toLocaleString()}.`;
+		}
+
+		if (!response.ok) {
+			throw new Error(`Failed to fetch GitHub events: ${response.statusText}`);
+		}
+
+		const events: any[] = await response.json();
+
+		const todaysPushEvents = events.filter(
+			event => event.type === 'PushEvent' && new Date(event.created_at) >= todayStart
+		)
+
+		if (todaysPushEvents.length === 0) {
+			return 'No commits today. You can do it! 💪';
+		}
+
+		const totalCommits = todaysPushEvents.reduce(
+			(sum, event) => sum + event.payload.commits.length, 
+			0
+		);
+	  
+		const repositories = new Set(
+			todaysPushEvents.map(event => event.repo.name)
+		);
+		
+		return `📊 Today's Commit Summary:\n\n` +
+           `- Commits: ${totalCommits} times\n` +
+           `- Active Repos: ${Array.from(repositories).join(', ')}\n\n` +
+           `Keep up the good work! 🎉`;
+	} catch (error) {
+		console.error('Error fetching GitHub events:', error);
+		return 'Get commits summary failed ❌';
 	}
 }
