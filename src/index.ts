@@ -10,7 +10,7 @@ export default {
 	const hasCommitted = await checkTodaysCommits(env);
 
 	if (!hasCommitted) {
-	  await sendReminderEmail(hours, env, reminderHours);
+	  await sendTelegramMessage(env, 'No commits today. You can do it! 💪');
 	}
   },
 
@@ -58,39 +58,27 @@ async function checkTodaysCommits(env: Env) {
   }
 }
 
-async function sendReminderEmail(hours: number, env: Env, reminderHours: number[]) {
-  const index = reminderHours.indexOf(hours);
-  const subject = env.REMINDER_SUBJECTS.split('|')[index];
-  const body = env.REMINDER_BODIES.split('|')[index];
+async function sendTelegramMessage(env: Env, message: string) {
+	try {
+		const response = await fetch(
+			`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`,
+			{
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					chat_id: env.TELEGRAM_CHAT_ID,
+					text: message,
+					parse_mode: 'HTML'
+				})
+			}
+		)
 
-  if (!subject || !body) {
-	console.log(`Don't have reminder configuration for this hour: ${hours}`);
-	return;
-  }
-
-  try {
-	const response = await fetch('https://api.mailchannels.net/tx/v1/send', {
-	  method: 'POST',
-	  headers: {
-		'Content-Type': 'application/json',
-	  },
-	  body: JSON.stringify({
-		personalizations: [{
-		  to: [{ email: env.EMAIL_RECIPIENT }]
-		}],
-		from: {
-			email: env.SENDER_EMAIL,
-			name: 'GitHub Commit Reminder'
-		},
-		subject,
-		content: [{ type: 'text/plain', value: body }]
-	  })
-	});
-
-	if (!response.ok) {
-	  throw new Error(`Failed to send email: ${response.statusText}`);
+		if (!response.ok) {
+			throw new Error(`Failed to send telegram message: ${response.statusText}`);
+		}
+	} catch (error) {
+		console.error('Error sending telegram message:', error);
 	}
-  } catch (error) {
-	console.error('Error sending reminder email:', error);
-  }
 }
