@@ -51,6 +51,9 @@ async function getTodaysCommitSummary(env: Env): Promise<string> {
 	const todayStart = new Date(now.toLocaleString('en-US', { timeZone: env.TIMEZONE }));
 	todayStart.setHours(0, 0, 0, 0);
 
+	env.DEBUG && console.log('todayStart:', todayStart);
+	env.DEBUG && console.log('now:', now);
+
 	try {
 		const response = await fetch(
 			`https://api.github.com/users/${env.GITHUB_USERNAME}/events`,
@@ -79,9 +82,13 @@ async function getTodaysCommitSummary(env: Env): Promise<string> {
 
 		const events: any[] = await response.json();
 
-		const todaysPushEvents = events.filter(
-			event => event.type === 'PushEvent' && new Date(event.created_at) >= todayStart
-		)
+		env.DEBUG && console.log('events:', events.slice(0, 3));
+
+		const todaysPushEvents = events.filter(event => {
+			const eventDate = new Date(event.created_at);
+			env.DEBUG && console.log('event date:', eventDate, 'type:', event.type);
+			return event.type === 'PushEvent' && eventDate >= todayStart;
+		});
 
 		if (todaysPushEvents.length === 0) {
 			return 'No commits today. You can do it! 💪';

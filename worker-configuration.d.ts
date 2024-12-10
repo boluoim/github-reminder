@@ -7,4 +7,5 @@ interface Env {
 	REMINDER_HOUR: number;
 	TELEGRAM_BOT_TOKEN: string;
 	TELEGRAM_CHAT_ID: string;
+	DEBUG: boolean;
 }

@@ -51,6 +51,12 @@ You need to set the following environment variables in Cloudflare Workers:
 - `TELEGRAM_BOT_TOKEN`: Telegram Bot Token
 - `TELEGRAM_CHAT_ID`: Telegram Chat ID
 - `REMINDER_HOUR`: Hour to send daily reminder (24-hour format) (e.g., 23)
+- `DEBUG`: Enable debug logging (optional, default: false)
+  - Set to `true` to enable detailed logging of:
+    - Today's start time
+    - Current time
+    - GitHub events data
+    - Event dates and types
 
 ### GitHub Token Setup
 
