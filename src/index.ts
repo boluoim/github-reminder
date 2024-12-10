@@ -60,7 +60,7 @@ async function getTodaysCommitSummary(env: Env): Promise<string> {
 			{
 				headers: {
 					Authorization: `Bearer ${env.GITHUB_TOKEN}`,
-					'Accept': 'application/vnd.github.v3+json',
+					'Accept': 'application/vnd.github+json',
 					'User-Agent': 'Github-Commit-Tracker'
 				}
 			}
