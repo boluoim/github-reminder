@@ -4,6 +4,10 @@ export default {
 	const userTime = new Date(currentTime.toLocaleString('en-US', { timeZone: env.TIMEZONE }));
 	const hours = userTime.getHours();
 
+	env.DEBUG && console.log('currentTime:', currentTime);
+	env.DEBUG && console.log('userTime:', userTime);
+	env.DEBUG && console.log('hours:', hours);
+
 	if (+hours !== +env.REMINDER_HOUR) return;
 
 	const message = await getTodaysCommitSummary(env);
