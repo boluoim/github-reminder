@@ -9,3 +9,10 @@ interface Env {
 	TELEGRAM_CHAT_ID: string;
 	DEBUG: boolean;
 }
+
+interface CommitDetails {
+    stats?: {
+        additions: number;
+        deletions: number;
+    };
+}

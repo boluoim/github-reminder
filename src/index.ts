@@ -94,19 +94,53 @@ async function getTodaysCommitSummary(env: Env): Promise<string> {
 			return 'No commits today. You can do it! 💪';
 		}
 
-		const totalCommits = todaysPushEvents.reduce(
-			(sum, event) => sum + event.payload.commits.length, 
-			0
-		);
-	  
-		const repositories = new Set(
-			todaysPushEvents.map(event => event.repo.name)
+		const repoStats = {} as Record<string, { commits: number, additions: number, deletions: number }>;
+		
+		// get commit details
+		for (const event of todaysPushEvents) {
+			const repoName = event.repo.name;
+			if (!repoStats[repoName]) {
+				repoStats[repoName] = { commits: 0, additions: 0, deletions: 0 };
+			}
+			
+			for (const commit of event.payload.commits) {
+				const commitDetails = await fetch(
+					`https://api.github.com/repos/${repoName}/commits/${commit.sha}`,
+					{
+						headers: {
+							Authorization: `Bearer ${env.GITHUB_TOKEN}`,
+							'Accept': 'application/vnd.github+json',
+							'User-Agent': 'Github-Commit-Tracker'
+						}
+					}
+				).then(res => res.json()) as CommitDetails;
+				
+				repoStats[repoName].commits++;
+				repoStats[repoName].additions += commitDetails.stats?.additions || 0;
+				repoStats[repoName].deletions += commitDetails.stats?.deletions || 0;
+			}
+		}
+		
+		const totalStats = Object.values(repoStats).reduce(
+			(acc, curr) => ({
+				commits: acc.commits + curr.commits,
+				additions: acc.additions + curr.additions,
+				deletions: acc.deletions + curr.deletions
+			}),
+			{ commits: 0, additions: 0, deletions: 0 }
 		);
 		
+		const repoList = Object.entries(repoStats)
+			.map(([repo, stats]) => {
+				const repoUrl = `https://github.com/${repo}`;
+				return `• <a href="${repoUrl}">${repo}</a>: ${stats.commits} commits (+${stats.additions} -${stats.deletions})`;
+			})
+			.join('\n');
+		
 		return `📊 Today's Commit Summary:\n\n` +
-           `- Commits: ${totalCommits} times\n` +
-           `- Active Repos: ${Array.from(repositories).join(', ')}\n\n` +
-           `Keep up the good work! 🎉`;
+			   `Total: ${totalStats.commits} commits (+${totalStats.additions} -${totalStats.deletions})\n\n` +
+			   `Active Repositories:\n${repoList}\n\n` +
+			   `Keep up the good work! 🎉`;
 	} catch (error) {
 		console.error('Error fetching GitHub events:', error);
 		return 'Get commits summary failed ❌';
