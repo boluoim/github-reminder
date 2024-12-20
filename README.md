@@ -132,3 +132,11 @@ MIT
 3. Commit your changes (`git commit -m 'Add some amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
+
+## Support
+
+If you find this project helpful, please consider giving it a ⭐ on GitHub!
+
+If you want to donate or sponsor this project, it will be greatly appreciated.
+
+<a href="https://www.buymeacoffee.com/ryanliu"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=ryanliu&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff" /></a>
